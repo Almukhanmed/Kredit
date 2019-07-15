@@ -66,6 +66,16 @@ public class HomeController {
 
     @RequestMapping(value = "/admin", method = RequestMethod.GET)
     public ModelAndView admin() {
+		Users user = getUserData();
+		List<Users> users = userBean.getAllUsers();
+        List<Food> food = userBean.getFood();
+        List<UserFood> userFoodList =userBean.getUserFood();
+        ModelAndView mw = new ModelAndView("profile");
+        mw.addObject("user", user);
+		mw.addObject("users", users);
+        mw.addObject("food",food);
+        mw.addObject("userfood",userFoodList);
+        return mw;
         ModelAndView mw = new ModelAndView("admin");
         return mw;
     }
@@ -149,6 +159,36 @@ public class HomeController {
         userBean.addUserFood(uf);
         return this.profile();
     }
+	
+	 @RequestMapping(
+            value = {"/delFood"},
+            method = {RequestMethod.POST}
+    )
+    public ModelAndView delFood(@RequestParam(name = "fid") String fId) {
+        Long id = Long.valueOf(fId);
+        userBean.deleteFood(id);
+        return this.admin();
+    }
+	
+	@RequestMapping(
+            value = {"/delUser"},
+            method = {RequestMethod.POST}
+    )
+    public ModelAndView delUser(@RequestParam(name = "uid") String uId) {
+        Long id = Long.valueOf(uId);
+        userBean.deleteUser(id);
+        return this.admin();
+    }
+	
+	    @RequestMapping(
+            value = {"/addFood"},
+            method = {RequestMethod.POST}
+    )
+    public ModelAndView addFood(@RequestParam(name = "fname") String fname,@RequestParam(name = "fprice") String fprice) {
+        Food f = new Food(fname,fprice);
+        userBean.addFood(f);
+        return this.admin();
+    }
 
     @RequestMapping(
             value = {"/regUser"},
@@ -176,6 +216,32 @@ public class HomeController {
         return this.index();
     }
 
+	@RequestMapping(
+            value = {"/regUser1"},
+            method = {RequestMethod.POST}
+    )
+    public ModelAndView regUser1(@RequestParam(name = "email") String email, @RequestParam(name = "login") String login, @RequestParam(name = "name") String name, @RequestParam(name = "surname") String surname, @RequestParam(name = "password") String password, @RequestParam(name = "favid") int favid) {
+        Set<Roles> roles = new HashSet<Roles>();
+        Roles role = new Roles();
+        role.setId(2L);
+        roles.add(role);
+        String sha1 = "";
+
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-1");
+            digest.reset();
+            digest.update(password.getBytes("utf8"));
+            sha1 = String.format("%040x", new BigInteger(1, digest.digest()));
+        } catch (Exception var7) {
+            var7.printStackTrace();
+        }
+
+        Users user = new Users(email, login, name, surname, sha1, favid, roles);
+        System.out.println(email + " " + " " + login + " " + password);
+        userBean.addUser(user);
+        return this.admin();
+    }
+	
     public Users getUserData() {
 
         Users user = null;

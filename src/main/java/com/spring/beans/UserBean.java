@@ -33,7 +33,33 @@ public class UserBean {
         session.close();
 
     }
+	
+	 public void deleteUser(Long id) {
 
+        Users us = new Users();
+        us.setId(id);
+
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        session.delete(us);
+        transaction.commit();
+        session.close();
+
+    }
+
+	 public void deleteFood(Long id) {
+
+        Food fd = new Food();
+        fd.setId(id);
+
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        session.delete(fd);
+        transaction.commit();
+        session.close();
+
+    }
+	
     //@Override
     public List<Users> getAllUsers() {
 
@@ -118,6 +144,16 @@ public class UserBean {
 
     }
 
+ public void addFood(Food food) {
+
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        session.save(food);
+        transaction.commit();
+
+        session.close();
+
+    }
 
 
 
